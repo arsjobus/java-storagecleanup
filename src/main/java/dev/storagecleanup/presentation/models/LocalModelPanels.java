@@ -5,13 +5,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import dev.storagecleanup.domain.HuggingFaceModel;
 import dev.storagecleanup.domain.OllamaModel;
-import dev.storagecleanup.infrastructure.MacTrashGateway;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
 
 public final class LocalModelPanels {
