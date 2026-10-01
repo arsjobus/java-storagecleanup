@@ -127,7 +127,8 @@ public final class Main {
         tabs.addTab("Hugging Face models", localModelPanels.huggingFacePanel());
         tabs.addTab("Application Support Folders", new SupportPanel(frame));
         frame.add(tabs, BorderLayout.CENTER);
-        frame.setLocationByPlatform(true);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
