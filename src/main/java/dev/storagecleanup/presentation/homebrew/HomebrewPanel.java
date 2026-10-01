@@ -8,6 +8,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
 import dev.storagecleanup.domain.BrewPackage;
 
@@ -70,8 +71,12 @@ public final class HomebrewPanel extends JPanel {
             @Override protected List<BrewPackage> doInBackground() throws Exception {
                 brewExecutable = findBrew();
                 List<BrewPackage> packages = new ArrayList<>();
+                ExecutorService workers = Executors.newFixedThreadPool(Math.min(4,
+                        Math.max(1, Runtime.getRuntime().availableProcessors())));
+                try {
                 Path cellar = Path.of(runBrew("--cellar").trim());
                 Path caskroom = Path.of(runBrew("--caskroom").trim());
+                List<Future<BrewPackage>> sizedPackages = new ArrayList<>();
                 for (String type : List.of("formula", "cask")) {
                     String output = runBrew("list", "--" + type, "--versions");
                     for (String line : output.lines().toList()) {
@@ -80,13 +85,18 @@ public final class HomebrewPanel extends JPanel {
                             String name = parts[0];
                             String version = parts.length > 1 ? parts[1] : "";
                             Path packageRoot = (type.equals("formula") ? cellar : caskroom).resolve(name);
-                            packages.add(new BrewPackage(type, name, "", version, brewPackageSize(type, name, packageRoot)));
+                            sizedPackages.add(workers.submit(() -> new BrewPackage(type, name, "", version,
+                                    brewPackageSize(type, name, packageRoot))));
                         }
                     }
                 }
+                for (Future<BrewPackage> future : sizedPackages) packages.add(future.get());
                 packages = addParentPackages(packages);
                 packages.sort(Comparator.comparing(BrewPackage::type).thenComparing(BrewPackage::name, String.CASE_INSENSITIVE_ORDER));
                 return packages;
+                } finally {
+                    workers.shutdownNow();
+                }
             }
             @Override protected void done() {
                 refreshBrewButton.setEnabled(true);
@@ -111,15 +121,22 @@ public final class HomebrewPanel extends JPanel {
             installedPackages.add(item.name());
             if (item.type().equals("formula")) installedFormulas.add(item.name());
         }
-        for (String dependency : installedFormulas) {
-            try {
-                String output = runBrew("uses", "--installed", dependency);
-                for (String parent : output.lines().map(String::trim).filter(installedPackages::contains).toList()) {
-                    parentsByDependency.computeIfAbsent(dependency, ignored -> new ArrayList<>()).add(parent);
-                }
-            } catch (Exception ignored) {
-                // Dependency metadata can be unavailable for third-party or outdated formulae.
+        ExecutorService workers = Executors.newFixedThreadPool(Math.min(4,
+                Math.max(1, Runtime.getRuntime().availableProcessors())));
+        try {
+            Map<String, Future<List<String>>> lookups = new HashMap<>();
+            for (String dependency : installedFormulas) {
+                lookups.put(dependency, workers.submit(() -> runBrew("uses", "--installed", dependency)
+                        .lines().map(String::trim).filter(installedPackages::contains).toList()));
             }
+            for (Map.Entry<String, Future<List<String>>> lookup : lookups.entrySet()) {
+                try { parentsByDependency.put(lookup.getKey(), lookup.getValue().get()); }
+                catch (Exception ignored) {
+                    // Dependency metadata can be unavailable for third-party or outdated formulae.
+                }
+            }
+        } finally {
+            workers.shutdownNow();
         }
         return new ArrayList<>(packages.stream().map(item -> {
             String parents = String.join(", ", parentsByDependency.getOrDefault(item.name(), List.of()));
