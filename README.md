@@ -36,6 +36,20 @@ mvn test
 
 The tests use temporary directories for filesystem scanning and sizing checks; they do not remove real files or uninstall packages.
 
+## Format Java code
+
+The project uses Google Java Format through the Spotless Maven plugin. Apply formatting with:
+
+```sh
+mvn spotless:apply
+```
+
+Check formatting without changing files with:
+
+```sh
+mvn spotless:check
+```
+
 ## Architecture
 
 - `domain` contains the storage candidate and package data records plus the storage allocation model.
