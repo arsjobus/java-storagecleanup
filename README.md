@@ -2,6 +2,8 @@
 
 A small Java 17 desktop app for finding storage that may be worth reviewing on macOS.
 
+![Storage Cleaner for MacOS](cover.png)
+
 ## What it scans
 
 - Application bundles in `/Applications` and `~/Applications`.
