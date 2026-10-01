@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v1.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Verify tag format
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v1\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must match v1.x.y (numeric x and y). Got: $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+
+      - name: Build runnable JAR
+        run: mvn --batch-mode --no-transfer-progress package
+
+      - name: Name release asset
+        run: cp target/mac-storage-cleaner-*.jar "storage-cleaner-${GITHUB_REF_NAME}.jar"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: storage-cleaner-${{ github.ref_name }}.jar
