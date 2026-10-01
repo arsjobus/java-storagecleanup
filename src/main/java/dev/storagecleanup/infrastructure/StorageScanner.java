@@ -12,21 +12,38 @@ import java.util.concurrent.TimeUnit;
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
 public final class StorageScanner {
-        private static final Path HOME = Path.of(System.getProperty("user.home")).toAbsolutePath().normalize();
-        private static final List<Path> APP_DIRS = List.of(Path.of("/Applications"), HOME.resolve("Applications"));
-        private static final Path CACHE_DIR = HOME.resolve("Library/Caches");
-        private static final Path DOWNLOADS = HOME.resolve("Downloads");
+        private final Path home;
+        private final List<Path> appDirs;
+        private final Path cacheDir;
+        private final Path downloads;
+        private final List<Path> brewDirs;
+
+        public StorageScanner() {
+            this(Path.of(System.getProperty("user.home")),
+                    List.of(Path.of("/Applications"), Path.of(System.getProperty("user.home"), "Applications")),
+                    Path.of(System.getProperty("user.home"), "Library/Caches"),
+                    Path.of(System.getProperty("user.home"), "Downloads"),
+                    List.of(Path.of("/opt/homebrew/Cellar"), Path.of("/opt/homebrew/Caskroom"),
+                            Path.of("/usr/local/Cellar"), Path.of("/usr/local/Caskroom")));
+        }
+
+        StorageScanner(Path home, List<Path> appDirs, Path cacheDir, Path downloads, List<Path> brewDirs) {
+            this.home = home.toAbsolutePath().normalize();
+            this.appDirs = List.copyOf(appDirs);
+            this.cacheDir = cacheDir;
+            this.downloads = downloads;
+            this.brewDirs = List.copyOf(brewDirs);
+        }
 
         public List<Candidate> scan(long downloadThreshold, boolean includeHidden) {
             List<Candidate> result = new ArrayList<>();
-            for (Path root : APP_DIRS) addChildren(result, root, "Application", p -> p.getFileName().toString().endsWith(".app"), 0);
-            addChildren(result, CACHE_DIR, "User cache", p -> true, 0);
-            addChildren(result, DOWNLOADS, "Large download", Files::isRegularFile, downloadThreshold);
+            for (Path root : appDirs) addChildren(result, root, "Application", p -> p.getFileName().toString().endsWith(".app"), 0);
+            addChildren(result, cacheDir, "User cache", p -> true, 0);
+            addChildren(result, downloads, "Large download", Files::isRegularFile, downloadThreshold);
             if (includeHidden) {
-                for (Path root : List.of(Path.of("/opt/homebrew/Cellar"), Path.of("/opt/homebrew/Caskroom"),
-                        Path.of("/usr/local/Cellar"), Path.of("/usr/local/Caskroom")))
+                for (Path root : brewDirs)
                     addChildren(result, root, "Homebrew", p -> true, downloadThreshold);
-                addHiddenFiles(result, HOME, downloadThreshold);
+                addHiddenFiles(result, home, downloadThreshold);
             }
             result.sort(Comparator.comparingLong((Candidate c) -> c.size()).reversed());
             return result;

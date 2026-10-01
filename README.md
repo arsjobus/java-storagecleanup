@@ -26,6 +26,16 @@ Install Java 17 or newer, open Terminal in this folder, and run:
 
 The launcher compiles all Java source files into a temporary directory and starts the app. Maven is optional. On macOS you can also double-click `run-mac-storage-cleaner.command` from Finder.
 
+## Run tests
+
+Install Java 17 or newer and Maven, then run the test suite from the project folder:
+
+```sh
+mvn test
+```
+
+The tests use temporary directories for filesystem scanning and sizing checks; they do not remove real files or uninstall packages.
+
 ## Architecture
 
 - `domain` contains the storage candidate and package data records plus the storage allocation model.
