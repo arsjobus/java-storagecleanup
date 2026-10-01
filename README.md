@@ -1,4 +1,4 @@
-# Mac Storage Cleaner
+# Storage Cleaner for MacOS
 
 A small Java 17 desktop app for finding storage that may be worth reviewing on macOS.
 
