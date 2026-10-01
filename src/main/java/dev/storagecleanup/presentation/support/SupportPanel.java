@@ -39,10 +39,11 @@ public final class SupportPanel extends JPanel {
         supportTable.setFillsViewportHeight(true);
         supportTable.setRowHeight(26);
         supportTable.setAutoCreateRowSorter(true);
+        supportTable.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(2, SortOrder.DESCENDING)));
         supportTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         supportTable.getColumnModel().getColumn(0).setPreferredWidth(300);
-        supportTable.getColumnModel().getColumn(1).setPreferredWidth(140);
-        supportTable.getColumnModel().getColumn(2).setPreferredWidth(520);
+        supportTable.getColumnModel().getColumn(1).setPreferredWidth(520);
+        supportTable.getColumnModel().getColumn(2).setPreferredWidth(100);
         supportTable.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? dev.storagecleanup.Main.formatSize(bytes) : "Unavailable");

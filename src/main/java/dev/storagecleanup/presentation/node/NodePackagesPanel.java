@@ -25,7 +25,7 @@ public final class NodePackagesPanel extends JPanel {
     private Path npmExecutable;
 
     public NodePackagesPanel(JFrame frame) {
-        super(new BorderLayout());
+        super(new BorderLayout(10, 10));
         this.frame = frame;
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT));
         controls.add(refreshButton);
@@ -39,11 +39,12 @@ public final class NodePackagesPanel extends JPanel {
         table.setFillsViewportHeight(true);
         table.setRowHeight(26);
         table.setAutoCreateRowSorter(true);
+        table.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(3, SortOrder.DESCENDING)));
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.getColumnModel().getColumn(0).setPreferredWidth(190);
         table.getColumnModel().getColumn(1).setPreferredWidth(120);
         table.getColumnModel().getColumn(2).setPreferredWidth(420);
-        table.getColumnModel().getColumn(3).setPreferredWidth(110);
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
         table.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? dev.storagecleanup.Main.formatSize(bytes) : "Unavailable");

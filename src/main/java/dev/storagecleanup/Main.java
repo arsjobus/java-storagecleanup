@@ -91,6 +91,7 @@ public final class Main {
         table.setFillsViewportHeight(true);
         table.setRowHeight(26);
         table.setAutoCreateRowSorter(true);
+        table.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(5, SortOrder.DESCENDING)));
         table.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? formatSize(bytes) : "");
@@ -106,10 +107,10 @@ public final class Main {
         });
         table.getColumnModel().getColumn(0).setMaxWidth(64); // Select
         table.getColumnModel().getColumn(1).setPreferredWidth(280); // Name
-        table.getColumnModel().getColumn(2).setPreferredWidth(100); // Size
-        table.getColumnModel().getColumn(3).setPreferredWidth(110); // Category
-        table.getColumnModel().getColumn(4).setPreferredWidth(145); // Last activity
-        table.getColumnModel().getColumn(5).setPreferredWidth(400); // Location
+        table.getColumnModel().getColumn(2).setPreferredWidth(110); // Category
+        table.getColumnModel().getColumn(3).setPreferredWidth(145); // Last activity
+        table.getColumnModel().getColumn(4).setPreferredWidth(400); // Location
+        table.getColumnModel().getColumn(5).setPreferredWidth(100); // Size
         scanPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         status.setBorder(BorderFactory.createEmptyBorder(5, 12, 10, 12));
@@ -124,7 +125,7 @@ public final class Main {
         tabs.addTab("Node packages", new NodePackagesPanel(frame));
         tabs.addTab("Ollama models", localModelPanels.ollamaPanel());
         tabs.addTab("Hugging Face models", localModelPanels.huggingFacePanel());
-        tabs.addTab("Application Support Files & Folders", new SupportPanel(frame));
+        tabs.addTab("Application Support Folders", new SupportPanel(frame));
         frame.add(tabs, BorderLayout.CENTER);
         frame.setLocationByPlatform(true);
         frame.setVisible(true);

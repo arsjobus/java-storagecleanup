@@ -40,11 +40,13 @@ public final class HomebrewPanel extends JPanel {
         brewTable.setFillsViewportHeight(true);
         brewTable.setRowHeight(26);
         brewTable.setAutoCreateRowSorter(true);
+        brewTable.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(4, SortOrder.DESCENDING)));
         brewTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         brewTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         brewTable.getColumnModel().getColumn(1).setPreferredWidth(260);
-        brewTable.getColumnModel().getColumn(2).setPreferredWidth(160);
-        brewTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+        brewTable.getColumnModel().getColumn(2).setPreferredWidth(220);
+        brewTable.getColumnModel().getColumn(3).setPreferredWidth(160);
+        brewTable.getColumnModel().getColumn(4).setPreferredWidth(100);
         brewTable.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? dev.storagecleanup.Main.formatSize(bytes) : "Unavailable");
@@ -78,10 +80,11 @@ public final class HomebrewPanel extends JPanel {
                             String name = parts[0];
                             String version = parts.length > 1 ? parts[1] : "";
                             Path packageRoot = (type.equals("formula") ? cellar : caskroom).resolve(name);
-                            packages.add(new BrewPackage(type, name, version, brewPackageSize(type, name, packageRoot)));
+                            packages.add(new BrewPackage(type, name, "", version, brewPackageSize(type, name, packageRoot)));
                         }
                     }
                 }
+                packages = addParentPackages(packages);
                 packages.sort(Comparator.comparing(BrewPackage::type).thenComparing(BrewPackage::name, String.CASE_INSENSITIVE_ORDER));
                 return packages;
             }
@@ -98,6 +101,30 @@ public final class HomebrewPanel extends JPanel {
                 }
             }
         }.execute();
+    }
+
+    private List<BrewPackage> addParentPackages(List<BrewPackage> packages) {
+        Map<String, List<String>> parentsByDependency = new HashMap<>();
+        Set<String> installedFormulas = new HashSet<>();
+        Set<String> installedPackages = new HashSet<>();
+        for (BrewPackage item : packages) {
+            installedPackages.add(item.name());
+            if (item.type().equals("formula")) installedFormulas.add(item.name());
+        }
+        for (String dependency : installedFormulas) {
+            try {
+                String output = runBrew("uses", "--installed", dependency);
+                for (String parent : output.lines().map(String::trim).filter(installedPackages::contains).toList()) {
+                    parentsByDependency.computeIfAbsent(dependency, ignored -> new ArrayList<>()).add(parent);
+                }
+            } catch (Exception ignored) {
+                // Dependency metadata can be unavailable for third-party or outdated formulae.
+            }
+        }
+        return new ArrayList<>(packages.stream().map(item -> {
+            String parents = String.join(", ", parentsByDependency.getOrDefault(item.name(), List.of()));
+            return new BrewPackage(item.type(), item.name(), parents, item.version(), item.size());
+        }).toList());
     }
 
     private Long brewPackageSize(String type, String name, Path packageRoot) {

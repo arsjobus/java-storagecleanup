@@ -13,7 +13,7 @@ final class OllamaTableModel extends AbstractTableModel {
         OllamaModel model = models.get(row);
         return switch (column) { case 0 -> model.name(); case 1 -> model.id(); default -> model.size(); };
     }
-    @Override public Class<?> getColumnClass(int column) { return String.class; }
+    @Override public Class<?> getColumnClass(int column) { return column == 2 ? Long.class : String.class; }
     @Override public String getColumnName(int column) { return columns[column]; }
     void setModels(List<OllamaModel> values) { models = new ArrayList<>(values); fireTableDataChanged(); }
 }

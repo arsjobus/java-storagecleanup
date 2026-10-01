@@ -8,11 +8,16 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import dev.storagecleanup.domain.HuggingFaceModel;
 import dev.storagecleanup.domain.OllamaModel;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
 
 public final class LocalModelPanels {
+    private static final Pattern OLLAMA_LIST_LINE = Pattern.compile("^(\\S+)\\s+(\\S+)\\s+([0-9]+(?:\\.[0-9]+)?)\\s*([KMGT]?B)\\b.*$", Pattern.CASE_INSENSITIVE);
     private final JFrame frame;
     private final JButton refreshOllamaButton = new JButton("Refresh models");
     private final JButton removeOllamaButton = new JButton("Remove selected");
@@ -44,10 +49,11 @@ public final class LocalModelPanels {
         ollamaTable.setFillsViewportHeight(true);
         ollamaTable.setRowHeight(26);
         ollamaTable.setAutoCreateRowSorter(true);
+        ollamaTable.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(2, SortOrder.DESCENDING)));
         ollamaTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         ollamaTable.getColumnModel().getColumn(0).setPreferredWidth(330);
         ollamaTable.getColumnModel().getColumn(1).setPreferredWidth(180);
-        ollamaTable.getColumnModel().getColumn(2).setPreferredWidth(130);
+        ollamaTable.getColumnModel().getColumn(2).setPreferredWidth(100);
         ollamaTable.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? dev.storagecleanup.Main.formatSize(bytes) : "Unavailable");
@@ -76,9 +82,10 @@ public final class LocalModelPanels {
         huggingFaceTable.setFillsViewportHeight(true);
         huggingFaceTable.setRowHeight(26);
         huggingFaceTable.setAutoCreateRowSorter(true);
+        huggingFaceTable.getRowSorter().setSortKeys(List.of(new RowSorter.SortKey(2, SortOrder.DESCENDING)));
         huggingFaceTable.getColumnModel().getColumn(0).setPreferredWidth(270);
-        huggingFaceTable.getColumnModel().getColumn(1).setPreferredWidth(140);
-        huggingFaceTable.getColumnModel().getColumn(2).setPreferredWidth(470);
+        huggingFaceTable.getColumnModel().getColumn(1).setPreferredWidth(470);
+        huggingFaceTable.getColumnModel().getColumn(2).setPreferredWidth(100);
         huggingFaceTable.setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
             @Override protected void setValue(Object value) {
                 setText(value instanceof Long bytes ? dev.storagecleanup.Main.formatSize(bytes) : "Unavailable");
@@ -138,11 +145,11 @@ public final class LocalModelPanels {
                 String output = runOllama("list");
                 List<OllamaModel> models = new ArrayList<>();
                 for (String line : output.lines().skip(1).toList()) {
-                    String[] parts = line.trim().split("\\s+", 4);
-                    if (parts.length < 3 || parts[0].isBlank()) continue;
-                    String name = parts[0];
-                    String id = parts[1];
-                    String size = parts[2];
+                    Matcher match = OLLAMA_LIST_LINE.matcher(line.trim());
+                    if (!match.matches()) continue;
+                    String name = match.group(1);
+                    String id = match.group(2);
+                    Long size = parseOllamaSize(match.group(3), match.group(4));
                     models.add(new OllamaModel(name, id, size));
                 }
                 models.sort(Comparator.comparing(OllamaModel::name, String.CASE_INSENSITIVE_ORDER));
@@ -161,6 +168,22 @@ public final class LocalModelPanels {
                 }
             }
         }.execute();
+    }
+
+    private static Long parseOllamaSize(String amount, String unit) {
+        int exponent = switch (unit.toUpperCase(Locale.ROOT)) {
+            case "KB" -> 1;
+            case "MB" -> 2;
+            case "GB" -> 3;
+            case "TB" -> 4;
+            default -> 0;
+        };
+        try {
+            return new BigDecimal(amount).multiply(BigDecimal.valueOf(1024).pow(exponent))
+                    .setScale(0, RoundingMode.HALF_UP).longValueExact();
+        } catch (ArithmeticException | NumberFormatException ex) {
+            return null;
+        }
     }
 
     private static Path findOllama() throws IOException {
