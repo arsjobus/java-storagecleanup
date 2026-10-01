@@ -79,7 +79,10 @@ public final class Main {
     controls.add(trashButton);
     top.add(controls, BorderLayout.CENTER);
     JPanel storageSummary = new JPanel(new BorderLayout(4, 5));
-    storageSummary.setBorder(BorderFactory.createTitledBorder("Mac storage"));
+    storageSummary.setBorder(
+        BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("Mac storage"),
+            BorderFactory.createEmptyBorder(8, 8, 8, 8)));
     storageSummary.setPreferredSize(new Dimension(360, 142));
     storageSummary.add(allocationBar, BorderLayout.NORTH);
     allocationText.setFont(allocationText.getFont().deriveFont(11f));
