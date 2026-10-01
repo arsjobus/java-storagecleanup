@@ -1,0 +1,19 @@
+package dev.storagecleanup.presentation.models;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.*;
+import dev.storagecleanup.domain.HuggingFaceModel;
+
+final class HuggingFaceTableModel extends AbstractTableModel {
+    private final String[] columns = {"Model repository", "Size", "Cache location"};
+    private List<HuggingFaceModel> models = new ArrayList<>();
+    @Override public int getRowCount() { return models.size(); }
+    @Override public int getColumnCount() { return columns.length; }
+    @Override public Object getValueAt(int row, int column) {
+        HuggingFaceModel model = models.get(row);
+        return switch (column) { case 0 -> model.name(); case 1 -> model.size(); default -> model.path().toString(); };
+    }
+    @Override public Class<?> getColumnClass(int column) { return column == 1 ? Long.class : String.class; }
+    @Override public String getColumnName(int column) { return columns[column]; }
+    void setModels(List<HuggingFaceModel> values) { models = new ArrayList<>(values); fireTableDataChanged(); }
+}
