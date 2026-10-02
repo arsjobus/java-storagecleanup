@@ -73,7 +73,7 @@ public final class LocalModelPanels {
           protected void setValue(Object value) {
             setText(
                 value instanceof Long bytes
-                    ? dev.storagecleanup.Main.formatSize(bytes)
+                    ? dev.storagecleanup.StorageCleanup.formatSize(bytes)
                     : "Unavailable");
             setHorizontalAlignment(SwingConstants.RIGHT);
           }
@@ -114,7 +114,7 @@ public final class LocalModelPanels {
           protected void setValue(Object value) {
             setText(
                 value instanceof Long bytes
-                    ? dev.storagecleanup.Main.formatSize(bytes)
+                    ? dev.storagecleanup.StorageCleanup.formatSize(bytes)
                     : "Unavailable");
             setHorizontalAlignment(SwingConstants.RIGHT);
           }
@@ -166,11 +166,11 @@ public final class LocalModelPanels {
                   : "Found "
                       + models.size()
                       + " model repositories; blob storage totals "
-                      + dev.storagecleanup.Main.formatSize(total)
+                      + dev.storagecleanup.StorageCleanup.formatSize(total)
                       + ".");
         } catch (Exception ex) {
           huggingFaceStatus.setText(
-              "Could not read Hugging Face cache: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not read Hugging Face cache: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();
@@ -208,10 +208,10 @@ public final class LocalModelPanels {
           ollamaStatus.setText("Found " + models.size() + " installed models.");
         } catch (Exception ex) {
           ollamaStatus.setText(
-              "Could not list Ollama models: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not list Ollama models: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           JOptionPane.showMessageDialog(
               frame,
-              dev.storagecleanup.Main.rootMessage(ex),
+              dev.storagecleanup.StorageCleanup.rootMessage(ex),
               "Ollama unavailable",
               JOptionPane.WARNING_MESSAGE);
         }
@@ -305,7 +305,7 @@ public final class LocalModelPanels {
           try {
             runOllama("rm", model.name());
           } catch (Exception ex) {
-            failures.add(model.name() + ": " + dev.storagecleanup.Main.rootMessage(ex));
+            failures.add(model.name() + ": " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           }
         }
         return failures;
@@ -322,7 +322,7 @@ public final class LocalModelPanels {
           refreshOllamaModels();
         } catch (Exception ex) {
           refreshOllamaButton.setEnabled(true);
-          ollamaStatus.setText("Removal failed: " + dev.storagecleanup.Main.rootMessage(ex));
+          ollamaStatus.setText("Removal failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

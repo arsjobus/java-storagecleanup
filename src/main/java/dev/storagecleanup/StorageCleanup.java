@@ -23,8 +23,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /** A cautious, user-directed storage scanner for macOS. */
-public final class Main {
-  private final JFrame frame = new JFrame("Mac Storage Cleaner");
+public final class StorageCleanup {
+  private final JFrame frame = new JFrame("Storage Cleanup");
   private final CandidateTableModel model = new CandidateTableModel();
   private final JTable table =
       new JTable(model) {
@@ -59,13 +59,14 @@ public final class Main {
   private StorageAllocation lastAllocation;
 
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new Main().show());
+    SwingUtilities.invokeLater(() -> new StorageCleanup().show());
   }
 
   private void show() {
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setMinimumSize(new Dimension(920, 540));
     frame.setLayout(new BorderLayout(12, 12));
+    frame.setJMenuBar(createMenuBar());
 
     JPanel top = new JPanel(new BorderLayout(12, 8));
     JLabel intro = new JLabel("Review large files, application bundles, and user cache folders.");
@@ -81,7 +82,7 @@ public final class Main {
     JPanel storageSummary = new JPanel(new BorderLayout(4, 5));
     storageSummary.setBorder(
         BorderFactory.createCompoundBorder(
-            BorderFactory.createTitledBorder("Mac storage"),
+            BorderFactory.createTitledBorder("Storage Breakdown"),
             BorderFactory.createEmptyBorder(8, 8, 8, 8)));
     storageSummary.setPreferredSize(new Dimension(360, 142));
     storageSummary.add(allocationBar, BorderLayout.NORTH);
@@ -148,6 +149,34 @@ public final class Main {
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
+  }
+
+  private JMenuBar createMenuBar() {
+    JMenuBar menuBar = new JMenuBar();
+    JMenu fileMenu = new JMenu("File");
+    JMenuItem exitItem = new JMenuItem("Exit");
+    exitItem.addActionListener(e -> frame.dispose());
+    fileMenu.add(exitItem);
+    menuBar.add(fileMenu);
+
+    JMenuItem aboutItem = new JMenuItem("About");
+    aboutItem.addActionListener(e -> showAbout());
+    menuBar.add(aboutItem);
+    return menuBar;
+  }
+
+  private void showAbout() {
+    JOptionPane.showMessageDialog(
+        frame,
+        "<html><div style='width: 330px'>"
+            + "<h2>Storage Cleanup</h2>"
+            + "A macOS storage review tool for finding large files, application bundles, "
+            + "caches, and local package or model data. Review items before moving them "
+            + "to Trash or uninstalling packages.<br><br>"
+            + "<b>Author:</b> Alexander Shepherd"
+            + "</div></html>",
+        "About Storage Cleanup",
+        JOptionPane.INFORMATION_MESSAGE);
   }
 
   public static String rootMessage(Exception ex) {

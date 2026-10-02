@@ -57,7 +57,7 @@ public final class HomebrewPanel extends JPanel {
           protected void setValue(Object value) {
             setText(
                 value instanceof Long bytes
-                    ? dev.storagecleanup.Main.formatSize(bytes)
+                    ? dev.storagecleanup.StorageCleanup.formatSize(bytes)
                     : "Unavailable");
             setHorizontalAlignment(SwingConstants.RIGHT);
           }
@@ -128,10 +128,10 @@ public final class HomebrewPanel extends JPanel {
           brewStatus.setText("Found " + packages.size() + " installed packages.");
         } catch (Exception ex) {
           brewStatus.setText(
-              "Could not list Homebrew packages: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not list Homebrew packages: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           JOptionPane.showMessageDialog(
               frame,
-              dev.storagecleanup.Main.rootMessage(ex),
+              dev.storagecleanup.StorageCleanup.rootMessage(ex),
               "Homebrew unavailable",
               JOptionPane.WARNING_MESSAGE);
         }
@@ -263,7 +263,7 @@ public final class HomebrewPanel extends JPanel {
           try {
             runBrew("uninstall", "--" + item.type(), item.name());
           } catch (Exception ex) {
-            failures.add(item.name() + ": " + dev.storagecleanup.Main.rootMessage(ex));
+            failures.add(item.name() + ": " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           }
         }
         return failures;
@@ -280,7 +280,7 @@ public final class HomebrewPanel extends JPanel {
           refreshBrewPackages();
         } catch (Exception ex) {
           refreshBrewButton.setEnabled(true);
-          brewStatus.setText("Uninstall failed: " + dev.storagecleanup.Main.rootMessage(ex));
+          brewStatus.setText("Uninstall failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

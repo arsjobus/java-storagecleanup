@@ -57,7 +57,7 @@ public final class SupportPanel extends JPanel {
           protected void setValue(Object value) {
             setText(
                 value instanceof Long bytes
-                    ? dev.storagecleanup.Main.formatSize(bytes)
+                    ? dev.storagecleanup.StorageCleanup.formatSize(bytes)
                     : "Unavailable");
             setHorizontalAlignment(SwingConstants.RIGHT);
           }
@@ -106,7 +106,7 @@ public final class SupportPanel extends JPanel {
                   + " folders. Sizes include readable files; inaccessible files may be omitted.");
         } catch (Exception ex) {
           supportStatus.setText(
-              "Could not read Application Support: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not read Application Support: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();
@@ -133,7 +133,7 @@ public final class SupportPanel extends JPanel {
                 folder ->
                     folder.name()
                         + " ("
-                        + dev.storagecleanup.Main.formatSize(
+                        + dev.storagecleanup.StorageCleanup.formatSize(
                             folder.size() == null ? 0 : folder.size())
                         + ")")
             .reduce((a, b) -> a + "\n" + b)
@@ -174,7 +174,7 @@ public final class SupportPanel extends JPanel {
         } catch (Exception ex) {
           refreshSupportButton.setEnabled(true);
           supportStatus.setText(
-              "Could not move folders: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not move folders: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

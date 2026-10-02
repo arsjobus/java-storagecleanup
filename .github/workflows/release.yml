@@ -33,9 +33,9 @@ jobs:
         run: mvn --batch-mode --no-transfer-progress package
 
       - name: Name release asset
-        run: cp target/mac-storage-cleaner-*.jar "storage-cleaner-${GITHUB_REF_NAME}.jar"
+        run: cp target/storage-cleanup-*.jar "storage-cleanup-${GITHUB_REF_NAME}.jar"
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: storage-cleaner-${{ github.ref_name }}.jar
+          files: storage-cleanup-${{ github.ref_name }}.jar

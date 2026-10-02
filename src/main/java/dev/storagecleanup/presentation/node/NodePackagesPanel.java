@@ -53,7 +53,7 @@ public final class NodePackagesPanel extends JPanel {
           protected void setValue(Object value) {
             setText(
                 value instanceof Long bytes
-                    ? dev.storagecleanup.Main.formatSize(bytes)
+                    ? dev.storagecleanup.StorageCleanup.formatSize(bytes)
                     : "Unavailable");
             setHorizontalAlignment(SwingConstants.RIGHT);
           }
@@ -100,10 +100,10 @@ public final class NodePackagesPanel extends JPanel {
           status.setText("Found " + packages.size() + " globally installed npm packages.");
         } catch (Exception ex) {
           status.setText(
-              "Could not list global npm packages: " + dev.storagecleanup.Main.rootMessage(ex));
+              "Could not list global npm packages: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           JOptionPane.showMessageDialog(
               frame,
-              dev.storagecleanup.Main.rootMessage(ex),
+              dev.storagecleanup.StorageCleanup.rootMessage(ex),
               "npm unavailable",
               JOptionPane.WARNING_MESSAGE);
         }
@@ -146,7 +146,7 @@ public final class NodePackagesPanel extends JPanel {
           try {
             runNpm("uninstall", "--global", item.name());
           } catch (Exception ex) {
-            failures.add(item.name() + ": " + dev.storagecleanup.Main.rootMessage(ex));
+            failures.add(item.name() + ": " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           }
         }
         return failures;
@@ -163,7 +163,7 @@ public final class NodePackagesPanel extends JPanel {
           refreshPackages();
         } catch (Exception ex) {
           refreshButton.setEnabled(true);
-          status.setText("Uninstall failed: " + dev.storagecleanup.Main.rootMessage(ex));
+          status.setText("Uninstall failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();
