@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v1.*.*'
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -15,17 +15,17 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Java 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
           cache: maven
 
       - name: Verify tag format
         run: |
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v1\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Tag must match v1.x.y (numeric x and y). Got: $GITHUB_REF_NAME" >&2
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must match vX.Y.Z (numeric version components). Got: $GITHUB_REF_NAME" >&2
             exit 1
           fi
 
