@@ -159,9 +159,11 @@ public final class StorageCleanup {
     fileMenu.add(exitItem);
     menuBar.add(fileMenu);
 
+    JMenu helpMenu = new JMenu("Help");
     JMenuItem aboutItem = new JMenuItem("About");
     aboutItem.addActionListener(e -> showAbout());
-    menuBar.add(aboutItem);
+    helpMenu.add(aboutItem);
+    menuBar.add(helpMenu);
     return menuBar;
   }
 
