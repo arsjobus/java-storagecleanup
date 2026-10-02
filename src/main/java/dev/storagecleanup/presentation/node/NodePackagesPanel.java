@@ -2,6 +2,7 @@ package dev.storagecleanup.presentation.node;
 
 import dev.storagecleanup.domain.NodePackage;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
+import dev.storagecleanup.presentation.AlternatingRowTable;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,7 @@ public final class NodePackagesPanel extends JPanel {
   private final JButton uninstallButton = new JButton("Uninstall selected");
   private final JLabel status = new JLabel("Refresh to list globally installed npm packages.");
   private final NodePackageTableModel model = new NodePackageTableModel();
-  private final JTable table = new JTable(model);
+  private final JTable table = new AlternatingRowTable(model);
   private Path npmExecutable;
 
   public NodePackagesPanel(JFrame frame) {
@@ -100,7 +101,8 @@ public final class NodePackagesPanel extends JPanel {
           status.setText("Found " + packages.size() + " globally installed npm packages.");
         } catch (Exception ex) {
           status.setText(
-              "Could not list global npm packages: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+              "Could not list global npm packages: "
+                  + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           JOptionPane.showMessageDialog(
               frame,
               dev.storagecleanup.StorageCleanup.rootMessage(ex),

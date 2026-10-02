@@ -5,6 +5,7 @@ import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import dev.storagecleanup.domain.SupportFolder;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
 import dev.storagecleanup.infrastructure.MacTrashGateway;
+import dev.storagecleanup.presentation.AlternatingRowTable;
 import java.awt.*;
 import java.nio.file.*;
 import java.util.*;
@@ -19,7 +20,7 @@ public final class SupportPanel extends JPanel {
   private final JLabel supportStatus =
       new JLabel("Refresh to measure folders in ~/Library/Application Support.");
   private final SupportTableModel supportModel = new SupportTableModel();
-  private final JTable supportTable = new JTable(supportModel);
+  private final JTable supportTable = new AlternatingRowTable(supportModel);
 
   public SupportPanel(JFrame frame) {
     super(new BorderLayout());
@@ -106,7 +107,8 @@ public final class SupportPanel extends JPanel {
                   + " folders. Sizes include readable files; inaccessible files may be omitted.");
         } catch (Exception ex) {
           supportStatus.setText(
-              "Could not read Application Support: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+              "Could not read Application Support: "
+                  + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

@@ -3,6 +3,7 @@ package dev.storagecleanup.presentation.models;
 import dev.storagecleanup.domain.HuggingFaceModel;
 import dev.storagecleanup.domain.OllamaModel;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
+import dev.storagecleanup.presentation.AlternatingRowTable;
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -27,13 +28,13 @@ public final class LocalModelPanels {
   private final JLabel ollamaStatus =
       new JLabel("Refresh to list locally installed Ollama models.");
   private final OllamaTableModel ollamaModel = new OllamaTableModel();
-  private final JTable ollamaTable = new JTable(ollamaModel);
+  private final JTable ollamaTable = new AlternatingRowTable(ollamaModel);
   private Path ollamaExecutable;
   private final JButton refreshHuggingFaceButton = new JButton("Check cache");
   private final JLabel huggingFaceStatus =
       new JLabel("Check for models in the standard Hugging Face home cache.");
   private final HuggingFaceTableModel huggingFaceModel = new HuggingFaceTableModel();
-  private final JTable huggingFaceTable = new JTable(huggingFaceModel);
+  private final JTable huggingFaceTable = new AlternatingRowTable(huggingFaceModel);
 
   public LocalModelPanels(JFrame frame) {
     this.frame = frame;
@@ -170,7 +171,8 @@ public final class LocalModelPanels {
                       + ".");
         } catch (Exception ex) {
           huggingFaceStatus.setText(
-              "Could not read Hugging Face cache: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+              "Could not read Hugging Face cache: "
+                  + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();
@@ -322,7 +324,8 @@ public final class LocalModelPanels {
           refreshOllamaModels();
         } catch (Exception ex) {
           refreshOllamaButton.setEnabled(true);
-          ollamaStatus.setText("Removal failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+          ollamaStatus.setText(
+              "Removal failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

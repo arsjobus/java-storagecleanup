@@ -2,6 +2,7 @@ package dev.storagecleanup.presentation.homebrew;
 
 import dev.storagecleanup.domain.BrewPackage;
 import dev.storagecleanup.infrastructure.FileTreeSizer;
+import dev.storagecleanup.presentation.AlternatingRowTable;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
@@ -18,7 +19,7 @@ public final class HomebrewPanel extends JPanel {
   private final JButton uninstallBrewButton = new JButton("Uninstall selected");
   private final JLabel brewStatus = new JLabel("Refresh to list installed Homebrew packages.");
   private final BrewTableModel brewModel = new BrewTableModel();
-  private final JTable brewTable = new JTable(brewModel);
+  private final JTable brewTable = new AlternatingRowTable(brewModel);
   private Path brewExecutable;
 
   public HomebrewPanel(JFrame frame) {
@@ -128,7 +129,8 @@ public final class HomebrewPanel extends JPanel {
           brewStatus.setText("Found " + packages.size() + " installed packages.");
         } catch (Exception ex) {
           brewStatus.setText(
-              "Could not list Homebrew packages: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+              "Could not list Homebrew packages: "
+                  + dev.storagecleanup.StorageCleanup.rootMessage(ex));
           JOptionPane.showMessageDialog(
               frame,
               dev.storagecleanup.StorageCleanup.rootMessage(ex),
@@ -280,7 +282,8 @@ public final class HomebrewPanel extends JPanel {
           refreshBrewPackages();
         } catch (Exception ex) {
           refreshBrewButton.setEnabled(true);
-          brewStatus.setText("Uninstall failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
+          brewStatus.setText(
+              "Uninstall failed: " + dev.storagecleanup.StorageCleanup.rootMessage(ex));
         }
       }
     }.execute();

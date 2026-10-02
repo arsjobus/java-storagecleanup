@@ -3,6 +3,7 @@ package dev.storagecleanup;
 import dev.storagecleanup.domain.Candidate;
 import dev.storagecleanup.domain.ScanResult;
 import dev.storagecleanup.domain.StorageAllocation;
+import dev.storagecleanup.presentation.AlternatingRowTable;
 import dev.storagecleanup.presentation.files.AllocationBar;
 import dev.storagecleanup.presentation.files.CandidateTableModel;
 import dev.storagecleanup.presentation.homebrew.HomebrewPanel;
@@ -27,7 +28,7 @@ public final class StorageCleanup {
   private final JFrame frame = new JFrame("Storage Cleanup");
   private final CandidateTableModel model = new CandidateTableModel();
   private final JTable table =
-      new JTable(model) {
+      new AlternatingRowTable(model) {
         @Override
         public Component prepareRenderer(
             javax.swing.table.TableCellRenderer renderer, int row, int column) {
@@ -35,7 +36,7 @@ public final class StorageCleanup {
           if (!isCellSelected(row, column)) {
             Candidate candidate = model.candidates.get(convertRowIndexToModel(row));
             Instant activity = candidate.lastActivity();
-            Color background = Color.WHITE;
+            Color background = row % 2 == 0 ? getBackground() : new Color(248, 248, 248);
             if (activity != null) {
               Instant now = Instant.now();
               if (activity.isBefore(now.minusSeconds(60L * 24 * 60 * 60)))
@@ -291,7 +292,8 @@ public final class StorageCleanup {
               get().entrySet().stream()
                   .map(entry -> new Object[] {entry.getKey(), formatSize(entry.getValue())})
                   .toArray(Object[][]::new);
-          JTable detailTable = new JTable(rows, columns);
+          JTable detailTable =
+              new AlternatingRowTable(new javax.swing.table.DefaultTableModel(rows, columns));
           detailTable.setEnabled(false);
           detailTable.setRowHeight(24);
           detailTable.getColumnModel().getColumn(0).setPreferredWidth(210);
