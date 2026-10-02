@@ -14,19 +14,19 @@
 
 ## Build and Run
 
-- `./run.command` compiles and launches the application with JDK 27 or newer.
+- `./run.command` compiles and launches the application with JDK 25 or newer.
 - `mvn package` compiles the project and builds a runnable JAR under `target/` (Maven is optional for direct launch).
 - `mvn test` runs Maven tests if tests are added; no test framework or test suite is currently configured.
 
 ## Coding Style
 
-Use Java 27 features and four-space indentation. Keep each feature's UI and event handling in its panel class; put longer filesystem or process work in `SwingWorker` so the Swing event thread stays responsive. Use `UpperCamelCase` for types, `lowerCamelCase` for methods and fields, and descriptive names for paths and package operations. Prefer standard-library APIs and avoid adding dependencies without a clear need.
+Use Java 25 features and four-space indentation. Keep each feature's UI and event handling in its panel class; put longer filesystem or process work in `SwingWorker` so the Swing event thread stays responsive. Use `UpperCamelCase` for types, `lowerCamelCase` for methods and fields, and descriptive names for paths and package operations. Prefer standard-library APIs and avoid adding dependencies without a clear need.
 
 Keep classes under 500 lines. If a class grows beyond this, it is likely doing too much - split it into focused classes, each with a single clear responsibility.
 
 ## Testing Guidelines
 
-There are no existing automated tests or coverage requirements. For changes, at minimum compile with `mvn package` (or `javac --release 27`) and manually check affected UI flows on macOS. Exercise scanner and Homebrew features against safe sample data; do not uninstall real packages as a test.
+There are no existing automated tests or coverage requirements. For changes, at minimum compile with `mvn package` (or `javac --release 25`) and manually check affected UI flows on macOS. Exercise scanner and Homebrew features against safe sample data; do not uninstall real packages as a test.
 
 ## Safety and Configuration
 

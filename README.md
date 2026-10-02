@@ -1,6 +1,6 @@
 # Storage Cleanup for MacOS
 
-A small Java 27 desktop app for finding storage that may be worth reviewing on macOS.
+A small Java 25 desktop app for finding storage that may be worth reviewing on macOS.
 
 ![Storage Cleanup for MacOS](cover.png)
 
@@ -20,7 +20,7 @@ The Node packages tab lists packages installed globally in npm's active prefix, 
 
 ## Run
 
-Install JDK 27 or newer, open Terminal in this folder, and run:
+Install JDK 25 or newer, open Terminal in this folder, and run:
 
 ```sh
 ./run.command
@@ -30,7 +30,7 @@ The launcher compiles all Java source files into a temporary directory and start
 
 ## Run tests
 
-Install JDK 27 or newer and Maven, then run the test suite from the project folder:
+Install JDK 25 or newer and Maven, then run the test suite from the project folder:
 
 ```sh
 mvn test
